@@ -1,0 +1,17 @@
+const express = require("express");
+const bodyParser = require("body-parser");
+const qr = require("qrcode");
+
+const app = express();
+const PORT = 3000;
+
+app.set("view engine", "ejs");
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static("public"));
+
+const qrRoutes = require("./routes/qr");
+app.use("/", qrRoutes);
+
+app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+});
