@@ -1,0 +1,28 @@
+document.addEventListener("DOMContentLoaded", () => {
+    const video = document.getElementById("qr-video");
+    const canvas = document.getElementById("qr-canvas");
+    const ctx = canvas.getContext("2d");
+    const qrResult = document.getElementById("qr-result");
+
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+        .then(stream => {
+            video.srcObject = stream;
+            video.setAttribute("playsinline", true);
+            video.play();
+            scanQRCode();
+        });
+
+    function scanQRCode() {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        
+        import("https://cdn.jsdelivr.net/npm/jsqr").then(jsQR => {
+            const code = jsQR.default(imageData.data, canvas.width, canvas.height);
+            if (code) {
+                qrResult.innerText = "QR Code Data: " + code.data;
+            } else {
+                requestAnimationFrame(scanQRCode);
+            }
+        });
+    }
+});
