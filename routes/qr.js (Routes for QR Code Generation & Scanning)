@@ -1,0 +1,31 @@
+const express = require("express");
+const qr = require("qrcode");
+
+const router = express.Router();
+
+// Home Page
+router.get("/", (req, res) => {
+    res.render("index", { qrCode: null });
+});
+
+// Generate QR Code
+router.post("/generate", async (req, res) => {
+    const { text } = req.body;
+    if (!text) {
+        return res.render("index", { qrCode: null, error: "Please enter text or URL!" });
+    }
+
+    try {
+        const qrCode = await qr.toDataURL(text);
+        res.render("index", { qrCode });
+    } catch (err) {
+        res.render("index", { qrCode: null, error: "Error generating QR code!" });
+    }
+});
+
+// QR Scanner Page
+router.get("/scanner", (req, res) => {
+    res.render("scanner");
+});
+
+module.exports = router;
